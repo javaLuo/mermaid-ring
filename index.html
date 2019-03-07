@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+    <link rel="stylesheet/less" type="text/css" href="./index.less" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/less.js/3.9.0/less.min.js"></script>
+    <title>小美人鱼套圈圈</title>
+  </head>
+  <body>
+    <div id="canvas-box" class="canvas-box"></div>
+    <div class="control-box">
+      <div><button class="btn" id="btn_left">按</button></div>
+      <div class="btn-box">
+        <button id="reset-btn" class="btn2">重来</button>
+      </div>
+      <div><button class="btn" id="btn_right">按</button></div>
+    </div>
+    <div class="back-box">
+      <div class="pao"></div>
+      <div class="pao"></div>
+      <div class="pao"></div>
+      <div class="pao"></div>
+      <div class="pao"></div>
+    </div>
+    <div id="success" class="success">
+      <div class="info">
+        <div class="title">恭喜！</div>
+        <div>你救出了公主，还愣着干什么?</div>
+      </div>
+      <img class="success-back" src="assets/imgs/success.jpg" alt="公主"/>
+      <button id="new-game" class="new-game">带回城堡</button>
+    </div>
+    <div id="first-info" class="first-info">
+      美丽的人鱼公主被大魔王囚禁在海底，你必须把圆圈套在柱子上才能解开公主的封印！
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.min.js"></script>
+    <script src="./assets/oimo.min.js"></script>
+    <script src="./assets/stats.min.js"></script>
+    <script src="./index.js"></script>
+  </body>
+</html>
