@@ -26,7 +26,8 @@ $(function() {
   $("#btn_right").on('click', {type: "right"}, onBtnClick);
   $("#reset-btn").on('click', onResetClick);
   $("#new-game").on('click', onNewGame);
-  
+  $("#music-btn").on('click', onMusicClick);
+
   init3boss();
   initWorld();
   initLights();
@@ -405,12 +406,12 @@ function onBtnClick(event){
       const s_x = Math.abs(p.x - (- threeW/2));
       const s_y = Math.abs(p.y - (- threeH/2));
       const far = Math.sqrt(s_x**2 + s_y**2);
-      body_cic[i].applyImpulse(p, {x: (300 - far*2)/lock,y: (500 - far*2)/lock,z});
+      body_cic[i].applyImpulse(p, {x: (250 - far*2)/lock,y: (500 - far*2)/lock,z});
     } else {
       const s_x = Math.abs(p.x - ( threeW/2));
       const s_y = Math.abs(p.y - ( threeH/2));
       const far = Math.sqrt(s_x**2 + s_y**2);
-      body_cic[i].applyImpulse(p, {x: (-300 + far*2)/lock,y: (500 - far*2)/lock,z});
+      body_cic[i].applyImpulse(p, {x: (-250 + far*2)/lock,y: (500 - far*2)/lock,z});
     }
   }
 }
@@ -469,6 +470,24 @@ function onPaoAnimationend(e){
 function gameSuccess(){
   cancelAnimationFrame(animateId);
   $("#success").addClass("show");
+  isLove = true;
+  playLove();
+}
+
+/** 随机刷爱心 **/
+const love = document.getElementById("love");
+let isLove = false;
+love.addEventListener("animationend", onLoveAnimationend, false);
+function playLove(){
+  love.style.left = `${random(10, boxW-10)}px`;
+  love.style.top = `${random(50, boxH)}px`;
+  love.classList.add('love-move');
+}
+function onLoveAnimationend(e){
+  e.target.classList.remove('love-move');
+  if(isLove){
+    setTimeout(()=>playLove());
+  }
 }
 
 /** 开始新的游戏 **/
@@ -478,8 +497,21 @@ function onNewGame(){
   if(times >= 2){
     info = `大魔王又出现了，它打破了封印，你必须把圆圈套在柱子上再次封印大魔王`;
   }
+  isLove = false;
   onResetClick();
   $f.text(info).addClass('show');
   $("#success").removeClass("show");
  
+}
+
+/** 音乐开关 **/
+let music = false;
+function onMusicClick(){
+  music = !music;
+  const $btn = $("#music-btn");
+  if(music){
+    $btn.addClass("play").text("播放中");
+  } else {
+    $btn.removeClass("play").text("开音乐");
+  }
 }
