@@ -49,8 +49,8 @@ div {
   position: absolute;
   top: 5px;
   left: 5px;
-  width: calc(90%);
-  height: calc(90%);
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
   border: solid 1px #fff;
   border-radius: 4px;
   z-index: 1;

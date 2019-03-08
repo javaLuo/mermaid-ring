@@ -242,7 +242,7 @@ function checkLock(){
 
 /** 初始化所有的pin **/
 /** pin原料 **/
-const size = [2, 2, 5, 3.6, 12, 12, 1, 20, 1];
+const size = [2, 2, 5, 3.6, 12, 12, 1, 24, 1];
 const pin_box = new THREE.BoxBufferGeometry(size[0], size[1], size[2]);
 const pin_box2 = new THREE.SphereBufferGeometry(size[3], size[4], size[5]);
 const pin_box3 = new THREE.CylinderBufferGeometry(0.4, 1.4, 24, 24, 24);
