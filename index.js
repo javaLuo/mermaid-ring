@@ -11,12 +11,11 @@ let world; // 物理世界对象
 let scene; // 场景
 let camera; // 相机
 let renderer; // 渲染器
-let stats; // 帧率辅助器
-let animateId;
-let cic = [];
-let body_cic = [];
-let ground = [];
-let pins = [];
+let animateId; // 用于停止动画循环
+let cic = []; // 小圈圈
+let body_cic = []; // 小圈圈刚体
+let ground = []; // 四周的墙壁
+let pins = []; // 两根柱子
 let boxW,boxH; // 容器真实宽高，px
 let threeW, threeH; // three中的盒子宽高
 
@@ -67,15 +66,16 @@ function checkSetting(){
 /** 初始化三要素 **/
 function init3boss() {
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(53, boxW / boxH, 0.1, 200);
+  camera = new THREE.PerspectiveCamera(90, boxW / boxH, 0.1, 200);
   renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 
   camera.position.set(0, 0, 50);
   camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-  // 100前景ground高度，50-相机到ground的距离
-  camera.fov = Math.atan((100/2)/50) * 2 * (180 / Math.PI);
-  camera.updateProjectionMatrix();
+  // 100前景ground高度，50-相机到ground的距离，不用算了，距离和高度固定，结果等于90度
+  // 不过过程还是写在这
+  // camera.fov = Math.atan((100/2)/50) * 2 * (180 / Math.PI);
+  // camera.updateProjectionMatrix();
 
   renderer.setSize(boxW, boxH, true);
   renderer.gammaOutput = true; // 所有纹理和颜色需要乘以gamma输出，颜色会亮丽许多
@@ -92,14 +92,6 @@ function resize() {
   renderer.setSize(boxW, boxH);
 }
 
-/** 辅助对象 **/
-function initHelper() {
-  stats = new Stats();
-  container.appendChild(stats.dom);
-  scene.add(new THREE.AxesHelper(5)); // 三位坐标轴
-  // scene.add(new THREE.CameraHelper(camera)); // 相机视锥体
-}
-
 /** 动画循环 **/
 function animate() {
   animateId = requestAnimationFrame(animate);
@@ -107,7 +99,6 @@ function animate() {
 }
 
 /** 渲染内容 **/
-const clock = new THREE.Clock();
 let timeOld = Date.now();
 let timeNow = timeOld;
 function render() {
