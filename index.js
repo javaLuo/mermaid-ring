@@ -4,6 +4,7 @@ const sound_btn = document.getElementById('sound_btn'); // 按钮音效
 const sound_back = document.getElementById('sound_back'); // 背景音乐
 const dom_success = document.getElementById("success"); // 成功界面
 const dom_music_btn = document.getElementById("music-btn"); // 音乐开关按钮
+const boss = document.getElementById('boss');
 const setting = checkSetting();
 let times = 0;
 let world; // 物理世界对象
@@ -22,13 +23,13 @@ let threeW, threeH; // three中的盒子宽高
 window.onload = function(){
   FastClick.attach(document.body);
   if(setting === 'pc'){
-    const boss = document.getElementById('boss');
     document.querySelectorAll('.yu').forEach((item)=>{
       item.style.animationDuration = '8s';
       item.style.webkitAnimationDuration = '8s';
     })
     boss.style.width = '640px';
   }
+  boss.classList.add('show');
   boxW = container.offsetWidth;
   boxH = container.offsetHeight;
   threeH = 100;

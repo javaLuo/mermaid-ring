@@ -2,6 +2,11 @@
   user-select: none;
   -webkit-user-select: none;
 }
+body{
+  background-color: #222;
+  margin:0;
+  padding:0;
+}
 div{
   box-sizing: border-box;
 
@@ -12,6 +17,11 @@ div{
   margin:0 auto;
   position: relative;
   overflow: hidden;
+  opacity:0;
+  transition: opacity 500ms;
+  &.show{
+    opacity: 1;
+  }
 }
 .canvas-box {
   height: calc(100vh - 120px);
