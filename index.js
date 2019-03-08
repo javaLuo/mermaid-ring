@@ -1,5 +1,10 @@
 const container = document.getElementById('canvas-box'); // 容器
-const $f = $("#first-info"); // 提示信息
+const dom_f = document.getElementById("first-info"); // 提示信息
+const sound_btn = document.getElementById('sound_btn'); // 按钮音效
+const sound_back = document.getElementById('sound_back'); // 背景音乐
+const dom_success = document.getElementById("success"); // 成功界面
+const dom_music_btn = document.getElementById("music-btn"); // 音乐开关按钮
+const setting = checkSetting();
 let times = 0;
 let world; // 物理世界对象
 let scene; // 场景
@@ -14,19 +19,26 @@ let pins = [];
 let boxW,boxH; // 容器真实宽高，px
 let threeW, threeH; // three中的盒子宽高
 
-$(function() {
+window.onload = function(){
   FastClick.attach(document.body);
-
+  if(setting === 'pc'){
+    const boss = document.getElementById('boss');
+    document.querySelectorAll('.yu').forEach((item)=>{
+      item.style.animationDuration = '8s';
+      item.style.webkitAnimationDuration = '8s';
+    })
+    boss.style.width = '640px';
+  }
   boxW = container.offsetWidth;
   boxH = container.offsetHeight;
   threeH = 100;
   threeW = (boxW / boxH) * threeH;
 
-  $("#btn_left").on('click', {type: "left"}, onBtnClick);
-  $("#btn_right").on('click', {type: "right"}, onBtnClick);
-  $("#reset-btn").on('click', onResetClick);
-  $("#new-game").on('click', onNewGame);
-  $("#music-btn").on('click', onMusicClick);
+  document.getElementById("btn_left").addEventListener('click', ()=> onBtnClick('left'),false);
+  document.getElementById("btn_right").addEventListener('click', ()=> onBtnClick('right'),false);
+  document.getElementById("reset-btn").addEventListener("click", onResetClick, false);
+  document.getElementById("new-game").addEventListener("click", onNewGame, false);
+  document.getElementById("music-btn").addEventListener("click", onMusicClick, false);
 
   init3boss();
   initWorld();
@@ -39,10 +51,18 @@ $(function() {
 
   initPaoPao();
   window.addEventListener('resize', resize, false);
-  $f.addClass('show');
+  dom_f.classList.add('show');
   animate();
-});
+}
 
+/** 判断是手机还是PC **/
+function checkSetting(){
+  if((navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i))) {
+    return 'phone';
+  } else {
+    return 'pc';
+  }
+}
 /** 初始化三要素 **/
 function init3boss() {
   scene = new THREE.Scene();
@@ -207,7 +227,6 @@ function checkLock(){
     const tz2 = p.z+3.4 <= -4 + 3.4 + 2.4;
 
     if(((tx1 && tx2) || (tx3 && tx4)) && tz1 && tz2 && ty1 && ty2){ // 3.4是小圆环圆心到内环表面的距离
-      // console.log('isLock:', item, index);
       item.isLock = true;
       i++;
     } else {
@@ -394,26 +413,30 @@ function random(min,max){
 }
 
 /** 按钮被点击 **/
-function onBtnClick(event){
-  $f.removeClass('show');
-  const t = event.data.type;
+function onBtnClick(t){
+  if(music){
+    sound_btn.currentTime = 0;
+    sound_btn.play();
+  }
+  dom_f.classList.remove('show');
   const z = Math.random() * 20 - 10;
   for(let i=0;i<body_cic.length;i++){
     const p = cic[i].position;
-    const lock = cic[i].isLock ? 5 : 1;
+    const lock = cic[i].isLock ? 4 : 1;
     
     if(t === 'left'){
       const s_x = Math.abs(p.x - (- threeW/2));
       const s_y = Math.abs(p.y - (- threeH/2));
       const far = Math.sqrt(s_x**2 + s_y**2);
-      body_cic[i].applyImpulse(p, {x: (250 - far*2)/lock,y: (500 - far*2)/lock,z});
+      body_cic[i].applyImpulse(p, {x: (230 - far*2)/lock,y: (450 - far*2)/lock,z});
     } else {
       const s_x = Math.abs(p.x - ( threeW/2));
       const s_y = Math.abs(p.y - ( threeH/2));
       const far = Math.sqrt(s_x**2 + s_y**2);
-      body_cic[i].applyImpulse(p, {x: (-250 + far*2)/lock,y: (500 - far*2)/lock,z});
+      body_cic[i].applyImpulse(p, {x: (-230 + far*2)/lock,y: (450 - far*2)/lock,z});
     }
   }
+  
 }
 
 /** 点击重新开始按钮 **/
@@ -446,17 +469,34 @@ function onResetClick(){
 
 /** 随机刷泡泡 **/
 const pao = document.querySelectorAll(".back-box .pao");
+const yu = document.querySelectorAll(".back-box .yu");
 pao.forEach((item)=>{
   item.addEventListener("animationend", onPaoAnimationend, false)
+})
+yu.forEach((item)=>{
+  item.addEventListener("animationend", onYuAnimationend, false)
 })
 function initPaoPao(){
   setInterval(()=>{
     const p = pao[random(0,pao.length-1)];
+    const y = yu[random(0,yu.length - 1)];
     if(p.getAttribute('isTrans')!=='t'){
-      
       p.style.left = `${random(10, boxW-10)}px`;
       p.setAttribute('isTrans', 't');
       p.classList.add('pao-move');
+    }
+    if(y.getAttribute('isTrans')!=='t'){
+      let type = Math.random() > 0.5;
+      y.style.top = `${random(0, boxH/2)}px`;
+      if(type){
+        y.style.left = '-10vw';
+        y.setAttribute('isTrans', 't');
+        y.classList.add('yu-movetoright');
+      } else {
+        y.style.left = `100vw`;
+        y.setAttribute('isTrans', 't');
+        y.classList.add('yu-movetoleft');
+      }
     }
   },2000)
 }
@@ -465,12 +505,17 @@ function onPaoAnimationend(e){
   e.target.setAttribute('isTrans', 'f');
   e.target.classList.remove('pao-move');
 }
-
+function onYuAnimationend(e){
+  e.target.setAttribute('isTrans', 'f');
+  e.target.classList.remove('yu-movetoleft','yu-movetoright');
+}
 /** 游戏成功 **/
 function gameSuccess(){
   cancelAnimationFrame(animateId);
-  $("#success").addClass("show");
+  dom_success.classList.add("show");
   isLove = true;
+  sound_back.pause();
+  document.getElementById("sound_success").play();
   playLove();
 }
 
@@ -498,9 +543,13 @@ function onNewGame(){
     info = `大魔王又出现了，它打破了封印，你必须把圆圈套在柱子上再次封印大魔王`;
   }
   isLove = false;
+  if(music){
+    sound_back.play();
+  }
   onResetClick();
-  $f.text(info).addClass('show');
-  $("#success").removeClass("show");
+  dom_f.innerText = info;
+  dom_f.classList.add('show');
+  dom_success.classList.remove("show");
  
 }
 
@@ -508,10 +557,14 @@ function onNewGame(){
 let music = false;
 function onMusicClick(){
   music = !music;
-  const $btn = $("#music-btn");
+
   if(music){
-    $btn.addClass("play").text("播放中");
+    dom_music_btn.classList.add("play");
+    dom_music_btn.innerText = "播放中";
+    sound_back.play();
   } else {
-    $btn.removeClass("play").text("开音乐");
+    dom_music_btn.classList.remove("play");
+    dom_music_btn.innerText = "开音乐";
+    sound_back.pause();
   }
 }
