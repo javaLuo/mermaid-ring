@@ -10,5 +10,7 @@
 
 <img src="assets/demo.png" width="300" />
 
+---
+
 - Three.js v102
-- Oimo.js 物理引擎，这个作者已经不维护了。Three也转向了Ammo.js
+- Oimo.js 物理引擎
