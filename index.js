@@ -1,12 +1,10 @@
 const container = document.getElementById('canvas-box'); // 容器
-const dom_f = document.getElementById("first-info"); // 提示信息
 const sound_btn = document.getElementById('sound_btn'); // 按钮音效
 const sound_back = document.getElementById('sound_back'); // 背景音乐
 const dom_success = document.getElementById("success"); // 成功界面
 const dom_music_btn = document.getElementById("music-btn"); // 音乐开关按钮
 const boss = document.getElementById('boss');
 const setting = checkSetting();
-let times = 0;
 let world; // 物理世界对象
 let scene; // 场景
 let camera; // 相机
@@ -48,10 +46,10 @@ window.onload = function(){
   initGround();
   initPins();
   initCircle();
+  initRay();
 
   initPaoPao();
   window.addEventListener('resize', resize, false);
-  dom_f.classList.add('show');
   animate();
 }
 
@@ -63,6 +61,7 @@ function checkSetting(){
     return 'pc';
   }
 }
+
 /** 初始化三要素 **/
 function init3boss() {
   scene = new THREE.Scene();
@@ -196,37 +195,48 @@ function initLights(){
   scene.add(l2);
 }
 
+/**================
+ * 私有 - 初始化柱子的射线
+ * =============**/
+ let rayLeft;
+ let rayRight;
+ function initRay() {
+   const leftP = pins[2].position;
+   const rightP = pins[5].position;
+ 
+   rayLeft = new THREE.Raycaster(new THREE.Vector3(leftP.x, leftP.y - 12, leftP.z), new THREE.Vector3(0, 1, 0), 0, 22);
+   rayLeft.intersectObjects(cic_in);
+   rayRight = new THREE.Raycaster(new THREE.Vector3(rightP.x, rightP.y - 12, rightP.z), new THREE.Vector3(0, 1, 0), 0, 22);
+   rayRight.intersectObjects(cic_in);
+
+    // const arrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(rightP.x, rightP.y - 12, rightP.z), 23, 0xffffff, 5, 5);
+    // scene.add(arrowHelper);
+ }
+
 /** 判断所有小圈套住的情况 **/
 /**
  * 小圆圈半径4，圆心到内表面距离3.4，小环本身半径0.6
  * 中间pin半径1
  */
 // 左边判定条件
+let lockNum = 0;
 
 function checkLock(){
-  const lx = -threeW / 2 / 2;
-  const rx = threeW/2/2;
-  let i=0;
-  cic.forEach((item,index)=>{
-    const p = item.position;
-    const tx1 = p.x-3.4 >= lx -3.4 - 2.4;
-    const tx2 = p.x + 3.4 <= lx + 3.4 + 2.4;
-    const tx3 = p.x-3.4 >= rx -3.4 - 2.4;
-    const tx4 = p.x + 3.4 <= rx + 3.4 + 2.4;
-    const ty1 = p.y >= -20;
-    const ty2 = p.y <= 4;
-    const tz1 = p.z-3.4 >= -4 - 3.4 -2.4;
-    const tz2 = p.z+3.4 <= -4 + 3.4 + 2.4;
+  const intersectsL = rayLeft.intersectObjects(cic_in);
+  const intersectsR = rayRight.intersectObjects(cic_in);
 
-    if(((tx1 && tx2) || (tx3 && tx4)) && tz1 && tz2 && ty1 && ty2){ // 3.4是小圆环圆心到内环表面的距离
-      item.isLock = true;
-      i++;
-    } else {
-      item.isLock = false;
-    }
-  })
-  // 全部套上，触发成功 cic.length
-  if(i>= cic.length){
+  const locksArr = [...intersectsL, ...intersectsR];
+  lockNum = locksArr.length;
+
+  for (let i = 0; i < body_cic.length; i++) {
+    cic[i].isLock = false;
+  }
+  for (let i = 0; i < locksArr.length; i++) {
+    cic[locksArr[i].object.parentIndex].isLock = true;
+  }
+  console.log('lockNum:', lockNum);
+  // todo check
+  if (lockNum >= 10) {
     gameSuccess();
   }
 }
@@ -320,7 +330,11 @@ const cic_material = [
   new THREE.MeshToonMaterial( { color: 0x2244dd } ),
   new THREE.MeshToonMaterial( { color: 0xdddd00 } ),
   new THREE.MeshToonMaterial( { color: 0x00dd00 } )
-]
+];
+const cic_geo_in = new THREE.CircleGeometry(3.4, 16);
+const cic_material_in = new THREE.MeshToonMaterial({ color: 0x000000, side: THREE.DoubleSide, transparent: true, opacity: 0 });
+const cic_in = []; // 需要检测相交性的对象
+
 function initCircle(){
   const types = ['box','box','box','box','box','box','box','box','box','box','box','box'];
   const sizes = [
@@ -393,8 +407,13 @@ function initCircle(){
     });
 
     const c = new THREE.Mesh( cic_geometry, cic_material[random(0,3)] );
+    const c_in = new THREE.Mesh(cic_geo_in, cic_material_in);
+    c_in.parentIndex = i;
+    c.add(c_in);
+
     cic.push(c);
     body_cic.push(wc);
+    cic_in.push(c_in);
     scene.add(c);
   }
 }
@@ -410,7 +429,6 @@ function onBtnClick(t){
     sound_btn.currentTime = 0;
     sound_btn.play();
   }
-  dom_f.classList.remove('show');
   const z = Math.random() * 20 - 10;
   for(let i=0;i<body_cic.length;i++){
     const p = cic[i].position;
@@ -449,6 +467,7 @@ function onResetClick(){
   });
 
   body_cic.length = 0;
+  cic_in.length = 0;
   ground.length = 0;
   cic.length = 0;
   pins.length = 0;
@@ -529,20 +548,12 @@ function onLoveAnimationend(e){
 
 /** 开始新的游戏 **/
 function onNewGame(){
-  times++;
-  let info = "你带着公主准备回城，这时大魔王出现了！你必须把圆圈套在柱子上来封印大魔王";
-  if(times >= 2){
-    info = `大魔王又出现了，它打破了封印，你必须把圆圈套在柱子上再次封印大魔王`;
-  }
   isLove = false;
   if(music){
     sound_back.play();
   }
   onResetClick();
-  dom_f.innerText = info;
-  dom_f.classList.add('show');
   dom_success.classList.remove("show");
- 
 }
 
 /** 音乐开关 **/
