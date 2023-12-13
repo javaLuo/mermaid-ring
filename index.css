@@ -363,3 +363,15 @@ div {
   box-shadow: 0 3px 4px #888;
   transform: translatey(0) translatex(-50%);
 }
+
+.test{
+  position: absolute;
+  top: 0;
+  left:0;
+  background-color: rgba(0,0,0,.5);
+  color: #fff;
+  padding: 10px;
+  z-index: 99;
+  min-height: 60px;
+  width: 100%;
+}

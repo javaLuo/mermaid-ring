@@ -31,12 +31,18 @@ window.onload = function(){
   boxH = container.offsetHeight;
   threeH = 100;
   threeW = (boxW / boxH) * threeH;
-
+  console.log('怎么没反应啊1：');
   document.getElementById("btn_left").addEventListener('click', ()=> onBtnClick('left'),false);
   document.getElementById("btn_right").addEventListener('click', ()=> onBtnClick('right'),false);
   document.getElementById("reset-btn").addEventListener("click", onResetClick, false);
   document.getElementById("new-game").addEventListener("click", onNewGame, false);
   document.getElementById("music-btn").addEventListener("click", onMusicClick, false);
+
+
+    console.log('怎么没反应啊：');
+    window.addEventListener('deviceorientation', (e)=>{console.log(e)}, false);
+
+
 
   init3boss();
   initWorld();
@@ -570,4 +576,11 @@ function onMusicClick(){
     dom_music_btn.innerText = "开音乐";
     sound_back.pause();
   }
+}
+
+/** 检测重力 **/
+function onDeviceorientation(e){
+  console.log(`${e.alpha}/${e.beta}/${e.gamma}`);
+  // const dom = document.getElementById('test');
+  // dom.innerText = `${e.alpha}/${e.beta}/${e.gamma}`;
 }
