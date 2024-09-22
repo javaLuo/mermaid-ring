@@ -51,6 +51,7 @@ window.onload = function(){
   initPaoPao();
   window.addEventListener('resize', resize, false);
   animate();
+  document.getElementById("girl-img").setAttribute('src', `assets/girls/0${random(1, 9)}.jpg`);
 }
 
 /** 判断是手机还是PC **/
@@ -420,7 +421,7 @@ function initCircle(){
 
 /** 取范围随机数 **/
 function random(min,max){
-  return Math.round(Math.random() * (max-min) + min);
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 /** 按钮被点击 **/
@@ -554,6 +555,7 @@ function onNewGame(){
   }
   onResetClick();
   dom_success.classList.remove("show");
+  document.getElementById("girl-img").setAttribute('src', `assets/girls/0${random(1, 9)}.jpg`);
 }
 
 /** 音乐开关 **/
