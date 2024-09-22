@@ -234,7 +234,7 @@ function checkLock(){
   for (let i = 0; i < locksArr.length; i++) {
     cic[locksArr[i].object.parentIndex].isLock = true;
   }
-  console.log('lockNum:', lockNum);
+  // console.log('lockNum:', lockNum);
   // todo check
   if (lockNum >= 10) {
     gameSuccess();
